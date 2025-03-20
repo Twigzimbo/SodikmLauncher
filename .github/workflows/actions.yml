@@ -1,0 +1,37 @@
+name: Build SodikmLauncher
+
+on:
+  workflow_dispatch: 
+
+  
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Install NuGet packages
+        run: |
+          dotnet add package DotNetZip
+          dotnet add package Titanium.Web.Proxy --version 3.2.2-beta
+          dotnet add package ini-parser
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: SodikmLauncher
+          path: |
+            **/bin/Release/
